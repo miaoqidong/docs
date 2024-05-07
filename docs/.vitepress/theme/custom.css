@@ -1,0 +1,11 @@
+.medium-zoom-overlay {
+  z-index: 100;
+}
+
+.medium-zoom-image {
+  z-index: 101;
+}
+
+img.VPImage.logo {
+  border-radius: 50%;
+}

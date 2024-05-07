@@ -1,0 +1,45 @@
+name: deploy
+
+on:
+  push:
+    branches: ['master']
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - uses: pnpm/action-setup@v2
+      - run: pnpm -v
+
+      - run: pnpm install
+
+      - run: pnpm -F @miaoqidong/docs exec tsx ./.vitepress/scripts/updateVersion.ts
+
+      - run: pnpm -F @miaoqidong/api run predocs:dev
+      - run: pnpm -F @miaoqidong/docs run docs:build-mirror
+      
+      - name: Publish package
+        run: |
+          pnpm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
+          pnpm -F @miaoqidong/docs publish --no-git-checks
+
+      - run: |
+          curl -X PUT 'https://registry-direct.npmmirror.com/@miaoqidong/docs/sync'
+          sleep 5
+          curl https://registry.npmmirror.com/@miaoqidong/docs/latest/files/package.json
+
+      - uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: 趣助理-docs
+          directory: ./docs/.vitepress/dist

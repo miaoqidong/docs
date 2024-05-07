@@ -1,0 +1,20 @@
+{
+  "name": "@miaoqidong/api",
+  "version": "0.0.5",
+  "description": "a typescript kit for 趣助理",
+  "type": "module",
+  "main": "./src/index.ts",
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "predocs:dev": "typedoc"
+  },
+  "volta": {
+    "extends": "../package.json"
+  }
+}
